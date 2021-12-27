@@ -20,13 +20,15 @@ class BranchAndBound:
         if upper_bound:
             self._upper_bound = upper_bound
         else:
-            self._upper_bound = self.__data.vertices_count() * self.__data.longest_distance()
+            self._upper_bound = self.__data.vertices_count() * \
+                self.__data.bounds()[1]
 
     def _update_lower_bound(self, lower_bound) -> None:
         if lower_bound:
             self._lower_bound = lower_bound
         else:
-            self._lower_bound = self.__data.vertices_count() * self.__data.shortest_distance()
+            self._lower_bound = self.__data.vertices_count() * \
+                self.__data.bounds()[0]
 
     def _get_optimal_path(self, vertex, path_length, visited_vertices) -> None:
 
@@ -35,19 +37,19 @@ class BranchAndBound:
         if len(visited_vertices) == self.__data.vertices_count():
             cycle_length = path_length + \
                 self.__data.get_distance(
-                    visited_vertices[0], vertex) - self.__data.shortest_distance()
+                    visited_vertices[0], vertex) - self.__data.bounds()[0]
             if cycle_length == self._upper_bound:
-                self._solution.append(visited_vertices)
+                self._solution.append(visited_vertices + [visited_vertices[0]])
                 return
             if cycle_length < self._upper_bound:
-                self._solution = [visited_vertices]
+                self._solution = [visited_vertices + [visited_vertices[0]]]
                 self._upper_bound = cycle_length
                 return
 
         for neighbor, neighbor_distance in vertex.get_neighbors():
             if neighbor in visited_vertices:
                 continue
-            distance_minus_min = neighbor_distance - self.__data.shortest_distance()
+            distance_minus_min = neighbor_distance - self.__data.bounds()[0]
             self._get_optimal_path(vertex=neighbor,  path_length=path_length +
                                    distance_minus_min, visited_vertices=visited_vertices + [neighbor])
 

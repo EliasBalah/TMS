@@ -30,7 +30,9 @@ class ClarkeAndWright:
         s.sort(key=lambda x: x[0], reverse=True)
         return s
 
-    def _get_optimal_path(self, start_vertex):
+    def _get_optimal_path(self, start_vertex=None):
+        if not start_vertex:
+            start_vertex = self.__data.get_vertices()[0]
         saving = self.get_saving(start_vertex)
         li = [start_vertex, saving[0][1][0], saving[0][1][1], start_vertex]
         for _, pair in saving[1:]:
@@ -49,18 +51,18 @@ class ClarkeAndWright:
         return li
 
     def _optimize(self):
-        optimal_path = []
-        optimal_path_length = float("inf")
-        for vertex in self.__data.get_vertices():
-            path = self._get_optimal_path(vertex)
-            path_length = self.get_path_length(path)
-            print(f"Clarke & Wright Cycle ({vertex.get_ID()} as depot):", identify_cycle(
-                path), "->", path_length)
-            if path_length < optimal_path_length:
-                optimal_path = [path]
-                optimal_path_length = path_length
-            elif path_length == optimal_path_length:
-                optimal_path.append(path)
+        # optimal_path = []
+        # optimal_path_length = float("inf")
+        # for vertex in self.__data.get_vertices():
+        #     path = self._get_optimal_path(vertex)
+        #     path_length = self.get_path_length(path)
+        #     if path_length < optimal_path_length:
+        #         optimal_path = [path]
+        #         optimal_path_length = path_length
+        #     elif path_length == optimal_path_length:
+        #         optimal_path.append(path)
+        optimal_path = self._get_optimal_path()
+        optimal_path_length = self.get_path_length(optimal_path)
         return (optimal_path, optimal_path_length)
 
     def fit(self, data) -> None:
